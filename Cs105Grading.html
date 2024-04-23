@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS105 Grade Calculator</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+        table {
+            width: 90%;
+            align-items: center;
+            border-collapse: collapse;
+            margin-bottom: 5vh;
+            table-layout: auto;
+        } 
+        table:nth-of-type(odd) tr:nth-child(1){
+            background-color: mediumpurple;
+            color: black;
+            font-size: x-large;
+        }
+        table:nth-of-type(odd) tr:nth-child(2), table:nth-of-type(odd) tr:nth-child(3){
+            background-color: lavender;
+            
+        }
+        table:nth-of-type(even) tr:nth-child(1){
+            background-color: cornflowerblue;
+            color: black;
+            font-size: x-large;
+        }
+        table:nth-of-type(even) tr:nth-child(2), table:nth-of-type(even) tr:nth-child(3){
+            background-color: lightblue;
+        }
+        
+        td, th {
+            border-style: solid;
+            border-color: black;
+            text-align: center;
+            vertical-align: top;
+            padding: 1%;
+            width: 15%;
+        }
+        select {
+            padding: 10px;
+            width: 80%; 
+            box-sizing: border-box;
+            margin-bottom: .5em;
+        }
+        #tableContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .final_homework_grade {
+            font-size: medium;
+        }
+        table.final_grades_table{
+            width: 60%;
+            table-layout: fixed;
+        }
+        table.final_grades_table tr:nth-child(1){
+            font-size: medium;
+            font-weight: normal;
+            background-color: hotpink;
+        }
+        table.final_grades_table tr:nth-child(2){
+            font-size: medium;
+            font-weight: normal;
+            background-color: pink;
+        }
+        .introduction{
+            align-items: center;
+            /* text-align: center; */
+            display: flex;
+            flex-direction: column;
+            width: 75%;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="margin-bottom: 10px;">CS105 Grade Calculator</h1>
+    <!-- <p style="font-size: medium; width: 75%; margin-bottom: 30px;">Hello! This is a tool to help calculate your final CS105 grade. This was made by a 2024 cs105 student, who only had the syllabus and piazza grade posts to go off of, so take the calculations with a grain of salt! All you need to do is pull up your Gradescope, and enter in all of the scores you got for each section of the homeworks. Your CQS and Homework grades will automatically update in the pink table below as you fill in your grades. Also don't forget to put in the number of recitations you attended (lowest 2 will be dropped). And if you haven't taken the final exam yet, just put in a guess to see how it'll affect your final score.</p> -->
+    <div class="introduction">
+        <h2>Welcome to the CS105 Grade Calculator!</h2>
+        <p>This tool is designed to help students of CS105 track and calculate their grades throughout the semester. By entering your scores and attending recitations, you can estimate your final grade based on the weighted contributions of each component of the course.</p>
+        <h3 style="margin:0;">How to Use the Calculator</h3>
+        <ul style="text-align: left;">
+            <li><strong>Enter Your Scores:</strong> For each homework, select your performance level from the dropdowns for each section of the hw. Each homework grade will automatically be calculated as you change your scores, and will be displayed to the right of each homework section. Your overall homework grade will be displayed in the pink table. </li>
+            <li><strong>Recitation Attendance:</strong> Enter the number of recitations you've attended in input box. Note that your lowest 2 grades will be dropped</li>
+            <li><strong>Final Exam:</strong> Input your expected or achieved score for the final exam to see its impact on your overall grade.</li>
+            <li><strong>Automatic Saving:</strong> Your inputs are saved locally in your browser, so you can come back anytime and pick up where you left off without needing to re-enter all your data.</li>
+            <li><strong>Note:</strong> I am a CS105 student, and I made this tool in my freetime because tracking grades in this class is way too hard. The calculations used here are based on the syllabus and the score breakdowns shared on Piazza. Please note that while I've aimed for accuracy, these calculations are estimations and might not exactly match your actual final scores. Use this tool as a guide and consider its results as approximations."</li>
+        </ul>
+    </div>
+    <table class="final_grades_table">
+        <tr>
+            <td>Recitations (5%)</td>
+            <td>CQS (10%)</td>
+            <td>Homework (70%)</td>
+            <td>Final Exam (15%)</td>
+            <td>Overall Final Score</td>
+
+        </tr>
+        <tr>
+            <td><div class="final_recitation_grade">
+                <input type="number" id="recitations_attended" step="1" max="11" value="11" style="width:20%" onchange="calculateGrade()">/11 attended
+                <div id="recitation_percent"></div>
+            </div></td>
+
+            <td><div class="final_CQS_grade"></div></td>
+            <td><div class="final_homework_grade"></div></td>
+            <td><div class="final_exam_grade">
+                <input type="number" id="final_exam_input" step="0.01" value="100.00" style="width:50%"  onchange="calculateGrade()">%
+            </div></td>
+            <td><div class="overall_final_score"></div></td>
+        </tr>
+    </table>
+
+
+    <div id="tableContainer"></div>
+    <div><button onclick="calculateGrade()">Calculate Grade</button><div class="final_homework_grade">Final Grade: TBD</div></div>
+
+
+
+    <script>
+        const hw_data = {
+            HW1 : {
+                title: "HW1: Impcore",
+                parts: [
+                    { title: "Comprehension Questions",
+                    subparts: [
+                        { id: "cqs1", weight: 0, title: ""}]},
+                    { title: "Algebraic Laws and Code Structure",
+                    subparts: [
+                        { id: "Alg_laws_code_struct_hw1", weight: 0.25, title: "S&O: Algebraic Laws and Code Structure"}]},
+                    { title: "Naming and Contracts",
+                    subparts: [
+                        { id: "name_and_contracts_hw1", weight: 0.15, title: "S&O: Naming and Contracts for Helper Functions"}]},
+                    { title: "Code Form, Layout, and Tests",
+                    subparts: [
+                        { id: "code_form_layouy_tests_1", weight: 0.20, title: "S&O: Code Form and Unit Tests"}]},
+                    { title: "Functional Correctness",
+                    subparts: [
+                        { id: "double_digit", weight: 0.08, title: "Double Digit:" },
+                        { id: "pop_count", weight: 0.08, title: "Population Count:" },
+                        { id: "binary", weight: 0.08, title: "Binary:" },
+                        { id: "prime?", weight: 0.06, title: "Prime:" },
+                        { id: "sigma", weight: 0.05, title: "Sigma:" },
+                        { id: "nth_prime", weight: 0.05, title: "Nth Prime:" }]}
+                    
+                ]
+            },
+            HW2 : {
+                title: "HW2: Operational Semantics",
+                parts: [
+                    { title: "Comprehension Questions",
+                    subparts: [
+                        { id: "cqs2", weight: 0, title: ""}]},
+                    { title: "Part A",
+                      subparts: [
+                        { id: "trans_opsem_eng", weight: 0.06, title: "S&O: Translating operational semantics to English:"},
+                        { id: "trans_eng_opsem", weight: 0.08, title: "S&O: Translating English to operational semantics:"},
+                        { id: "expl_imp_rules", weight: 0.06, title: "S&O: Explanation of altered Impcore rules:"}]},
+                    { title: "Part B",
+                      subparts: [
+                        { id: "sem_comp_awk_icon", weight: 0.25, title: "S&O: Semantics for unbound variables comparable to Awk/Icon:"},
+                        { id: "FC_awk_icon", weight: 0.10, title: "FC: Awkicon-code:"}]},
+                    { title: "Part C",
+                      subparts: [
+                        { id: "deriv_tree_begin", weight: 0.25, title: "S&O: Derivation trees:"},
+                        { id: "proof_if_x", weight: 0.20, title: "S&O: Proof of equivalence:"}
+                    ]}
+                ]
+            },
+            HW3 : {
+                title: "HW3: Scheme",
+                parts: [
+                    { title: "Comprehension Questions",
+                    subparts: [
+                        { id: "cqs3", weight: 0, title: ""}]},
+                    { title: "Proof that append is associative ",
+                      subparts: [
+                        { id: "proof_append_assoc", weight: 0.20, title: "S&O: Proof that append is associative"}]},
+                    { title: "Algebraic Laws and Code Structure",
+                      subparts: [
+                        { id: "Alg_laws_code_struct_hw3", weight: 0.20, title: "S&O: Algebraic Laws and Code Structure"}]},
+                    { title: "Naming and Contracts for Helper Functions",
+                      subparts: [
+                        { id: "Naming_contacts_hw3", weight: 0.10, title: "S&O: Naming, Contracts, and Unit Tests"}
+                    ]},
+                    { title: "Functional Correctness",
+                      subparts: [
+                        { id: "arg-max", weight: 0.06, title: "Arg-max:"},
+                        { id: "contig_sublist", weight: 0.08, title: "Contig-sublist?:"},
+                        { id: "drop", weight: 0.07, title: "Drop:"},
+                        { id: "flatten", weight: 0.08, title: "Flatten:"},
+                        { id: "take", weight: 0.07, title: "Take:"},
+                        { id: "unzip", weight: 0.06, title: "Unzip:"},
+                        { id: "zip", weight: 0.08, title: "Zip:"}
+                    ]}
+                ]
+            },
+            HW4 : {
+                title: "HW4: Higher-Order Functions",
+                parts: [
+                    { title: "Comprehension Questions",
+                    subparts: [
+                        { id: "cqs4", weight: 0, title: ""}]},
+                    { title: "Calculational Proof with Higher-Order Functions",
+                      subparts: [
+                        { id: "calc_proof_HO_func", weight: 0.15, title: "S&O: Calculational proof with higher-order functions"}
+                    ]},
+                    { title: "Algebraic Laws and Code Structure",
+                      subparts: [
+                        { id: "Alg_laws_code_struct_hw4", weight: 0.25, title: "S&O: Algebraic Laws and Code Structure"}
+                    ]},
+                    { title: "Effective Use of Folds ",
+                      subparts: [
+                        { id: "effect_use_fold", weight: 0.10, title: "S&O: Effective use of folds"},
+                    ]},
+                    { title: "Functional Correctness",
+                      subparts: [
+                        { id: "add_element", weight: 0.02, title: "Add-element:"},
+                        { id: "all?", weight: 0.02, title: "All?:"},
+                        { id: "append", weight: 0.02, title: "Append:"},
+                        { id: "diff", weight: 0.02, title: "Diff:"},
+                        { id: "dropwhile", weight: 0.04, title: "Dropwhile:"},
+                        { id: "evens", weight: 0.03, title: "Evens:"},
+                        { id: "exists?", weight: 0.02, title: "Exists?:"},
+                        { id: "filter", weight: 0.02, title: "Filter:"},
+                        { id: "flip", weight: 0.04, title: "Flip:"},
+                        { id: "inter", weight: 0.02, title: "Inter:"},
+                        { id: "map", weight: 0.02, title: "Map:"},
+                        { id: "max*", weight: 0.02, title: "Max*:"},
+                        { id: "ordered_by", weight: 0.06, title: "Ordered-by:"},
+                        { id: "product", weight: 0.02, title: "Product:"},
+                        { id: "reverse", weight: 0.02, title: "Reverse:"},
+                        { id: "sum", weight: 0.02, title: "Sum:"},
+                        { id: "takewhile", weight: 0.04, title: "Takewhile:"},
+                        { id: "two_digits", weight: 0.03, title: "Two-digits:"},
+                        { id: "union", weight: 0.02, title: "Union:"}
+                    ]}
+                ]
+            },
+            HW5 : {
+                title: "HW5: Continuations",
+                parts: [
+                    { title: "Comprehension Questions",
+                    subparts: [
+                        { id: "cqs5", weight: 0, title: ""}]},
+                    { title: "New Operational Semantics for Val",
+                      subparts: [
+                        { id: "new_opsem_val_part_a", weight: 0.08, title: "Part A:"},
+                        { id: "new_opsem_val_part_b", weight: 0.05, title: "Part B:"},
+                        { id: "new_opsem_val_part_c", weight: 0.02, title: "Part C:"}
+                    ]},
+                    { title: "Algebraic Laws and Code Structure",
+                      subparts: [
+                        { id: "list_of_and_formula", weight: 0.17, title: "list-of? and formula?:"},
+                        { id: "eval_formula_law_struct", weight: 0.13, title: "eval-formula:"}
+                    ]},
+                    { title: "Functional Correctness",
+                      subparts: [
+                        { id: "eval-formula_FC", weight: 0.12, title: "Eval-formula:"},
+                        { id: "formula?", weight: 0.10, title: "Formula?:"},
+                        { id: "list-of?", weight: 0.10, title: "List-of?:"},
+                        { id: "sat-colver", weight: 0.23, title: "SAT solver:"}
+                    ]},
+                ]
+            },
+            HW6 : {
+                title: "HW6: Introduction to ML",
+                parts: [
+                    { title: "Comprehension Questions",
+                    subparts: [
+                        { id: "cqs6", weight: 0, title: ""}]},
+                    { title: "Part A: Classic list operations",
+                      subparts: [
+                        { id: "struct_and_org_6", weight: 0.15, title: "S&O: Structure of list operations"},
+                        { id: "new_opsem_val_part_b", weight: 0.10, title: "S&O: Style of list operations:"},
+                        { id: "conact6", weight: 0.04, title: "Concat:"},
+                        { id: "minlist", weight: 0.04, title: "Minlist:"},
+                        { id: "mynull", weight: 0.04, title: "Mynull:"},
+                        { id: "pairfoldreq", weight: 0.04, title: "Pairfoldreq:"},
+                        { id: "reverse6", weight: 0.04, title: "Reverse:"},
+                        { id: "zip6", weight: 0.04, title: "Zip:"},
+                        { id: "ziptoo", weight: 0.04, title: "Ziptoo:"}
+                    ]},
+                    { title: "Part B: Manipulating S-expressions",
+                      subparts: [
+                        { id: "FC_flattensyms", weight: 0.10, title: "FC: flattenSyms:"},
+                        { id: "FC_numbersSx", weight: 0.02, title: "FC: numbersSx:"}
+                    ]},
+                    { title: "Part C: Augmenting the uScheme interpreter",
+                      subparts: [
+                        { id: "struct_and_organ_6", weight: 0.18, title: "S&O: Improved uScheme interpreter:"},
+                        { id: "FC_Uscheme_6", weight: 0.12, title: "FC: Closures:"}
+                    ]},
+                    { title: "Clean Unit Tests",
+                      subparts: [
+                        { id: "clean_test_warmup", weight: 0.05, title: " FC: Clean-unit:"}
+                    ]}
+                ]
+            },
+            HW7 : {
+                title: "HW7: Type Systems",
+                parts: [
+                    { title: "Comprehension Questions",
+                    subparts: [
+                        { id: "cqs7", weight: 0, title: ""}]},
+                    { title: "Part A: Theory (type rules for lists)",
+                      subparts: [
+                        { id: "type_rules_lists", weight: 0.15, title: "S&O: Theory (type rules for lists)"},
+                    ]},
+                    { title: "Part B: Polymorphic List Functions",
+                      subparts: [
+                        { id: "FC_B_7", weight: 0.15, title: "FC: Typefun:"},
+                        { id: "SO_B_7", weight: 0.06, title: "S&O: Typed uScheme functions:"}
+                    ]},
+                    { title: "Part C: Adding Arrays to the timpcore Type Checker",
+                      subparts: [
+                        { id: "FC_C_7", weight: 0.16, title: "FC: Timpcore:"}
+                    ]},
+                    { title: "Part D: Writing the tuscheme Type Checker",
+                      subparts: [
+                        { id: "FC_D_7", weight: 0.30, title: "FC: Tuscheme:"},
+                        { id: "SO_D_7", weight: 0.13, title: "S&O: Type Checker for Typed uScheme:"},
+                        { id: "regression_tests7", weight: 0.05, title: "S&O: Regression Tests for Typed uScheme:"}
+                    ]}
+                ]
+            },
+            HW8 : {
+                title: "HW8: Type Interface",
+                parts: [
+                    { title: "Comprehension Questions",
+                    subparts: [
+                        { id: "cqs8", weight: 0, title: ""}]},
+                    { title: "Part A: Theory (constraint-based rules for BEGIN and LAMBDA)",
+                      subparts: [
+                        { id: "theory_con_rule_begin_lambda", weight: 0.15, title: "S&O: Theory (algorithmic typing rules for LAMBDA and BEGIN)"},
+                    ]},
+                    { title: "Part B: Constraint Solver",
+                      subparts: [
+                        { id: "FC_B_8", weight: 0.25, title: "FC: Solver:"},
+                        { id: "SO_B_8", weight: 0.15, title: "S&O: Constraint Solver (`solve`):"}
+                    ]},
+                    { title: "Part C: Type Checker",
+                      subparts: [
+                        { id: "FC_C_8", weight: 0.25, title: "FC: Inference:"},
+                        { id: "SO_C_8", weight: 0.20, title: "S&O: Type Checker (`typeof` and `literal`):"}
+                    ]}
+                ]
+            },
+            HW9 : {
+                title: "HW9: Modules",
+                parts: [
+                    { title: "Comprehension Questions",
+                    subparts: [
+                        { id: "cqs9", weight: 0, title: ""}]},
+                    { title: "Exercise 1: Natural Numbers",
+                      subparts: [
+                        { id: "FC_ex1_9", weight: 0.17, title: "FC: Natural:"},
+                        { id: "SO_ex1_9", weight: 0.17, title: "S&O: Natural:"}
+                    ]},
+                    { title: "Exercise 2: Heapsort",
+                      subparts: [
+                        { id: "FC_ex2_9", weight: 0.06, title: "FC: Heapsort:"},
+                        { id: "SO_ex2_9", weight: 0.15, title: "S&O: Sort:"}
+                    ]},
+                    { title: "Exercise 3: Bignums",
+                      subparts: [
+                        { id: "FC_ex3_9", weight: 0.22, title: "FC: Bignum:"},
+                        { id: "SO_ex3_9", weight: 0.23, title: "S&O: BignumFn:"}
+                    ]}
+                ]
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            buildTable();
+            restoreSelections();
+            calculateGrade();
+
+            document.querySelectorAll('select').forEach(input => {
+                input.addEventListener('change', () => {
+                    saveSelection(input.id, input.value);
+                    calculateGrade();
+                });
+            });
+
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('change', () => {
+                    saveSelection(input.id, input.value);
+                    calculateGrade();
+                });
+            });
+        });
+
+        function saveSelection(id, value) {
+            localStorage.setItem(id, value);
+        }
+
+        function restoreSelections() {
+            const selects = document.querySelectorAll('select');
+            const inputs = document.querySelectorAll('input');
+            selects.forEach(select => {
+                const savedValue = localStorage.getItem(select.id);
+                if (savedValue) {
+                    select.value = savedValue;
+                }
+            });
+
+            inputs.forEach(select => {
+                const savedValue = localStorage.getItem(select.id);
+                if (savedValue) {
+                    select.value = savedValue;
+                }
+            });
+        }
+
+       
+
+        function buildTable() {
+            const table_container = document.getElementById('tableContainer');
+            
+            Object.keys(hw_data).forEach(hwKey => {
+                const hw = hw_data[hwKey];
+
+                const table = document.createElement('table');
+                table_container.appendChild(table);
+
+                const hw_tr = document.createElement('tr');
+                const parts_tr = document.createElement('tr');
+                const tr = document.createElement('tr');
+
+                const hw_th = document.createElement('th');
+                hw_th.colSpan = 6;
+                hw_th.textContent = hw.title;
+                hw_tr.appendChild(hw_th);
+
+
+                hw.parts.forEach(part => {
+                    const th = document.createElement('th');
+                    const td = document.createElement('td');
+                    th.textContent = part.title;
+                    parts_tr.appendChild(th);
+
+                    let html = `<div class="part">`;
+                    part.subparts.forEach(subpart => {
+                       html += `<div class="subpart"> 
+                                        <div class="subpart_title">${subpart.title}</div>
+                                        <select id="${subpart.id}">
+                                            <option value="100">Excellent</option>
+                                            <option value="95">Very Good</option>
+                                            <option value="85">Good</option>
+                                            <option value="75">Fair</option>
+                                            <option value="65">Poor</option>
+                                            <option value="0">No Credit</option>
+                                        </select>
+                                    </div>`;
+                    });
+                    html += `</div>`;
+                    td.innerHTML = html;
+                    tr.appendChild(td);
+                });
+                const grade_th = document.createElement('th');
+                grade_th.textContent = "Grade"
+                
+                parts_tr.appendChild(grade_th);
+
+                const grade = document.createElement('td');
+                grade.innerHTML = `<div id="${hwKey}_grade"></div>`;
+                tr.appendChild(grade);
+
+                table.appendChild(hw_tr);
+                table.appendChild(parts_tr);
+                table.appendChild(tr);
+            });
+        }
+
+        function calculateGrade() {
+            var final_hw_grade= 0;
+            var cqs_grade = 0;
+            var num_hw = 0;
+
+            const final_grade_dest = document.getElementsByClassName(`final_homework_grade`);
+            const CQS_grade_dest = document.getElementsByClassName(`final_CQS_grade`);
+
+            Object.keys(hw_data).forEach(hwKey => {
+                const hw = hw_data[hwKey];
+                hw_grade_dest = document.getElementById(`${hwKey}_grade`);
+
+                var hw_grade = 0;
+
+                num_hw += 1;
+
+                hw.parts.forEach((part, i) => {
+                    part.subparts.forEach(subpart => {
+                        if (i == 0){
+                            cqs_grade += 1 * document.getElementById(`${subpart.id}`).value;
+                        }
+                        hw_grade += subpart.weight * document.getElementById(`${subpart.id}`).value;
+                    });
+                });
+
+                
+                hw_grade_dest.innerHTML = hw_grade.toFixed(2) + "%";
+                 final_hw_grade+= hw_grade;
+            });
+
+            final_averaged_hw_grade =  final_hw_grade/ num_hw
+            Array.from(final_grade_dest).forEach((element) => {
+                element.innerHTML = final_averaged_hw_grade.toFixed(2) + "%";
+            });
+
+            final_cqs_grade = cqs_grade / num_hw;
+            Array.from(CQS_grade_dest).forEach((element) => {
+                element.innerHTML = final_cqs_grade.toFixed(2) + "%";
+            });
+
+            const rec_grade = recitationGradeCalc();
+
+            calcFinalScore(final_averaged_hw_grade, final_cqs_grade, rec_grade)
+        }
+
+        function recitationGradeCalc(){
+            num_attended = document.getElementById("recitations_attended").value;
+            var rec_grade = 0;
+            if (num_attended >= 9){
+                rec_grade = 100;
+            } else {
+                rec_grade = (num_attended / 9) * 100;
+            }
+                
+            document.getElementById("recitation_percent").innerHTML = rec_grade.toFixed(2) + "%";
+
+            return rec_grade;
+        }
+
+        function calcFinalScore(hw_grade, cqs_grade, rec_grade){
+            const final_score_dest = document.getElementsByClassName(`overall_final_score`);
+            const exam_grade = document.getElementById("final_exam_input").value;
+
+            var final_overall_score = (rec_grade * 0.05) + (cqs_grade * 0.10) + (hw_grade * 0.70) + (exam_grade * 0.15);
+
+            Array.from(final_score_dest).forEach(element => {
+                element.innerHTML = final_overall_score.toFixed(2) + "%";
+            });
+        }
+
+    </script>
+    
+</body>
+</html>
