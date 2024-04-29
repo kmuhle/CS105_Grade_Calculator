@@ -87,7 +87,7 @@
     <h1 style="margin-bottom: 10px;">CS105 Grade Calculator</h1>
     <!-- <p style="font-size: medium; width: 75%; margin-bottom: 30px;">Hello! This is a tool to help calculate your final CS105 grade. This was made by a 2024 cs105 student, who only had the syllabus and piazza grade posts to go off of, so take the calculations with a grain of salt! All you need to do is pull up your Gradescope, and enter in all of the scores you got for each section of the homeworks. Your CQS and Homework grades will automatically update in the pink table below as you fill in your grades. Also don't forget to put in the number of recitations you attended (lowest 2 will be dropped). And if you haven't taken the final exam yet, just put in a guess to see how it'll affect your final score.</p> -->
     <div class="introduction">
-        <p>This tool is designed to help students of CS105 track and calculate their grades throughout the semester. By entering your scores and recitation attendance, you can estimate your final grade based on the weighted contributions of each component of the course.</p>
+        <!-- <p>This tool is designed to help students of CS105 track and calculate their grades throughout the semester. By entering your scores and recitation attendance, you can estimate your final grade based on the weighted contributions of each component of the course.</p> -->
         <h3 style="margin:0;">How to Use the Calculator</h3>
         <ul style="text-align: left;">
             <li><strong>Enter Your Scores:</strong> For each homework, select your performance level from the dropdowns for each section of the hw. Each homework grade will automatically be calculated as you change your scores, and will be displayed to the right of each homework section. Your overall homework grade will be displayed in the pink table. </li>
@@ -376,6 +376,24 @@
                       subparts: [
                         { id: "FC_ex3_9", weight: 0.22, title: "FC: Bignum:"},
                         { id: "SO_ex3_9", weight: 0.23, title: "S&O: BignumFn:"}
+                    ]}
+                ]
+            },
+            HW10 : {
+                title: "HW9: Modules",
+                parts: [
+                    { title: "Comprehension Questions",
+                    subparts: [
+                        { id: "cqs10", weight: 0, title: ""}]},
+                    { title: "Exercise 1: Natural Numbers",
+                      subparts: [
+                        { id: "FC_ex1_10", weight: 0.17, title: "FC: Natural:"},
+                        { id: "SO_ex1_10", weight: 0.17, title: "S&O: Natural classes:"}
+                    ]},
+                    { title: "Exercise 2: Bignums",
+                      subparts: [
+                        { id: "FC_ex2_10", weight: 0.22, title: "FC: Bignum:"},
+                        { id: "SO_ex2_10", weight: 0.23, title: "S&O: S&O: Large integer classes:"}
                     ]}
                 ]
             }
