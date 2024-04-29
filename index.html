@@ -86,14 +86,14 @@
 <body>
     <h1 style="margin-bottom: 10px;">CS105 Grade Calculator</h1>
     <div class="introduction">
-        <!-- <p>This tool is designed to help students of CS105 track and calculate their grades throughout the semester. By entering your scores and recitation attendance, you can estimate your final grade based on the weighted contributions of each component of the course.</p> -->
         <h3 style="margin:0;">How to Use the Calculator</h3>
         <ul style="text-align: left;">
-            <li><strong>Enter Your Scores:</strong> For each homework, select your performance level from the dropdowns for each section of the hw. Each homework grade will automatically be calculated as you change your scores, and will be displayed to the right of each homework section. Your overall homework grade will be displayed in the pink table. </li>
-            <li><strong>Recitation Attendance:</strong> Enter the number of recitations you've attended in input box. Note that your lowest 2 grades will be dropped</li>
+            <li><strong>Enter Your Scores:</strong> 
+                
+                For each homework table below, select your grade from the dropdowns for each piece of the homework (they should match up with the grades provided on Gradescope). Each homework grade will automatically be calculated as you change your scores, and will be displayed to the right of each homework section. Your overall homework grade will be displayed at the top in the pink table. </li>
+            <li><strong>Recitation Attendance:</strong> Enter the number of recitations you've attended in input box. Note that your lowest 2 grades will be dropped.</li>
             <li><strong>Final Exam:</strong> Input your expected or achieved score for the final exam to see its impact on your overall grade.</li>
-            <li><strong>Automatic Saving:</strong> Your inputs are saved locally in your browser, so you can come back anytime and pick up where you left off without needing to re-enter all your data.</li>
-            <!-- <li><strong>HW10:</strong> Homework 10 will be added as a category when HW10 grades are released. </li> -->
+            <li><strong>Automatic Saving:</strong> Your inputs are saved locally in your browser, so you can come back anytime and pick up where you left off without needing to re-enter all your grades.</li>
             <li><strong>Note:</strong> I am a CS105 student, and I made this tool in my freetime because tracking grades in this class is wayyy too hard. The calculations used here are based on the syllabus and the score breakdowns shared on Piazza. Please note that while I've aimed for accuracy, these calculations are estimations and might not exactly match your actual final scores. Use this tool as a guide and consider its results as approximations.</li>
         </ul>
     </div>
@@ -121,7 +121,6 @@
         </tr>
     </table>
 
-
     <div id="tableContainer"></div>
     <script>
         const hw_data = {
@@ -148,7 +147,6 @@
                         { id: "prime?", weight: 0.06, title: "Prime:" },
                         { id: "sigma", weight: 0.05, title: "Sigma:" },
                         { id: "nth_prime", weight: 0.05, title: "Nth Prime:" }]}
-                    
                 ]
             },
             HW2 : {
